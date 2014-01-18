@@ -88,6 +88,8 @@ app.post('/', function(req, res){
 					}
 				}
 			console.log(instagramPosts);
+			//res.render('result.jade', {'instagramPosts' : instagramPosts, 'twitterPosts' : twitterPosts});
+			//res.render('result.jade', {'instagramPosts' : instagramPosts});
 				
 			
 		});
@@ -114,9 +116,9 @@ app.post('/', function(req, res){
 	  		});
 	  		setTimeout(stream.destroy, 5000);
 	  	});
-		
+
 	});
-	app.get('/result', function(){})
+	//res.render('result.jade', {'instagramPosts' : instagramPosts, 'twitterPosts' : twitterPosts});
 	//res.render('result.jade', instagramPosts);
 	//, twitterPosts
 });

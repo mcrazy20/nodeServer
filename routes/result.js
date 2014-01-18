@@ -35,7 +35,7 @@ exports.result = function(req, res){
 		});
 
 		twit.search(req.body.location, {}, function(err, data){
-			
+
 		});
 	res.render('result', { title: 'Express' });
-};
+});
