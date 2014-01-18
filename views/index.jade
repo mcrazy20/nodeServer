@@ -12,12 +12,13 @@ block content
         br
         .large-4.columns
           h3 What's happening in 
-        .large-5.columns
-          input#locationName(type='text', placeholder='Enter Location')
-        .large-1.columns
-          h3 ?
-        .large-2.columns.marginRight
-          a.small.success.button(href='#', onclick='getLocation()') Go!
+        form(method="POST")
+         .large-5.columns
+           input#locationName(type='text', placeholder='Enter Location', name="location")
+         .large-1.columns
+           h3 ?
+         .large-2.columns.marginRight
+           input.success.button(type="submit", name="submit", value = "Go!")
     #twitterPosts.large-6.columns
     #instagramPosts.large-6.columns
     .row.panel
