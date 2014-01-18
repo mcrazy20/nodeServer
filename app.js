@@ -9,7 +9,7 @@ var twitter = require('ntwitter');
 var geocoderProvider = 'openstreetmap';
 var httpAdapter = 'http';
 
-
+var async = require('async');
 
 var express = require('express');
 var routes = require('./routes');
@@ -74,30 +74,33 @@ app.post('/', function(req, res){
 		loc.lng = parseFloat(res[0]['longitude']);
 
 		//This function uses Latitude, Longitude, and a Distance and returns a list of pictures
-		ig.media_search(loc.lat, loc.lng, 3500, function(err, medias, limit){
-			if (err)
-				console.log(err);
-			//console.log(medias);
+
+		async.series([
+			function(callback){
+			ig.media_search(loc.lat, loc.lng, 3500, function(err, medias, limit){
+				if (err)
+					console.log(err);
+					//console.log(medias);
 			
 				for (i = 0; i<10; i++)
-				{
-					if (medias[i].caption != null && medias[i].caption.text != null)
 					{
+						if (medias[i].caption != null && medias[i].caption.text != null)
+						{
 						
-						instagramPosts[i] = {text: medias[i].caption.text, link: medias[i].link}
+							instagramPosts[i] = {text: medias[i].caption.text, link: medias[i].link}
+						}
 					}
-				}
-			console.log(instagramPosts);
+				console.log(instagramPosts);
 			//res.render('result.jade', {'instagramPosts' : instagramPosts, 'twitterPosts' : twitterPosts});
 			//res.render('result.jade', {'instagramPosts' : instagramPosts});
-				
+				callback(null, instagramPosts);
 			
-		});
-		//This is the twitter stream.
-		
-		twit.stream('statuses/filter', {'locations': location}, function(stream) {
-	  		stream.on('data', function (data) {
-	    	//console.log(data)
+			});},
+
+			function(callback){
+				twit.stream('statuses/filter', {'locations': location}, function(stream) {
+	  			stream.on('data', function (data) {
+	    		//console.log(data)
 	    			
 	    			if (data.text != null && i < 6)
 	    			{
@@ -108,17 +111,29 @@ app.post('/', function(req, res){
 	    		});
 
 	  		
-	  		stream.on('error', function(response){
-	  			console.log(response);
-	  		});
-	  		stream.on('destroy', function(response){
-	  			console.log(response);
-	  		});
-	  		setTimeout(stream.destroy, 5000);
-	  	});
+	  			stream.on('error', function(response){
+	  				console.log(response);
+	  			});
+	  			stream.on('destroy', function(response){
+	  				console.log(response);
+	  			});
+	  			setTimeout(stream.destroy, 5000);
+	  			});
+	  			callback(null, twitterPosts);
+				}
+			],
+
+			//Async allows both twitter and instagram to finish THEN calls this function
+			function(err, results){
+				res.render('result.jade', {'instagramPosts' : results[0], 'twitterPosts' : results[1]});
+			});
+		
+		//This is the twitter stream.
+		
+		
 
 	});
-	//res.render('result.jade', {'instagramPosts' : instagramPosts, 'twitterPosts' : twitterPosts});
+	
 	//res.render('result.jade', instagramPosts);
 	//, twitterPosts
 });
