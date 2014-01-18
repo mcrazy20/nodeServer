@@ -85,10 +85,9 @@ app.post('/', function(req, res){
 					{
 						
 						instagramPosts[i] = {text: medias[i].caption.text, link: medias[i].link}
-						i++
 					}
 				}
-			
+			console.log(instagramPosts);
 				
 			
 		});
@@ -98,9 +97,9 @@ app.post('/', function(req, res){
 	  		stream.on('data', function (data) {
 	    	//console.log(data)
 	    			
-	    			if ( twitterPosts[i] != undefined && data.text != null && i < 6)
+	    			if (data.text != null && i < 6)
 	    			{
-	  					twitterPosts[i].text = data.text;
+	  					twitterPosts[i] = {text: data.text};
 	  					i++;
 	  				}
 	  			
@@ -117,9 +116,9 @@ app.post('/', function(req, res){
 	  	});
 		
 	});
-	res.render('result.jade', instagramPosts, twitterPosts, function(err, html){
-
-	});
+	app.get('/result', function(){})
+	//res.render('result.jade', instagramPosts);
+	//, twitterPosts
 });
 
 http.createServer(app).listen(app.get('port'), function(){
