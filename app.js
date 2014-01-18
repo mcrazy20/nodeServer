@@ -49,6 +49,8 @@ app.post('/', function(req, res){
 	  	access_token_secret: 'KdQXA1r3gVpqNnfy5uiHTNGGrf9sz5IeHXlNMwPVgCAsc'
 	});
 
+	/*console.log("res initial");
+	console.log(res);*/
 	var geocoder = require('node-geocoder').getGeocoder(geocoderProvider, httpAdapter, extra);
 
 	var ig = require('instagram-node').instagram();
@@ -60,18 +62,18 @@ app.post('/', function(req, res){
          client_secret: '2f4ba206c6b34c41a8676333324a1237' });
 	var instagramPosts= [];
 	var twitterPosts = [];
-	geocoder.geocode(req.body.location, function(err, res){
+	geocoder.geocode(req.body.location, function(err, geores){
 		if (err)
 			console.log(err);
 
 		//Giving a range to search for Twitter. Unfortunately the Twitter api doesn't allow you to use a radius when searching for geotagged tweets
-		var location = (res[0]['longitude'] - .2) + ',' + (res[0]['latitude'] - .2) + ',' + (parseFloat(res[0]['longitude'])
-		 + parseFloat(.2)) + ',' + (parseFloat(res[0]['latitude']) + parseFloat(.2));
+		var location = (geores[0]['longitude'] - .2) + ',' + (geores[0]['latitude'] - .2) + ',' + (parseFloat(geores[0]['longitude'])
+		 + parseFloat(.2)) + ',' + (parseFloat(geores[0]['latitude']) + parseFloat(.2));
 
 		//Searching for instagram pictures
 		var loc = {};
-		loc.lat = parseFloat(res[0]['latitude']);
-		loc.lng = parseFloat(res[0]['longitude']);
+		loc.lat = parseFloat(geores[0]['latitude']);
+		loc.lng = parseFloat(geores[0]['longitude']);
 
 		//This function uses Latitude, Longitude, and a Distance and returns a list of pictures
 
@@ -125,7 +127,16 @@ app.post('/', function(req, res){
 
 			//Async allows both twitter and instagram to finish THEN calls this function
 			function(err, results){
-				res.render('result.jade', {'instagramPosts' : results[0], 'twitterPosts' : results[1]});
+				/*console.log("results forthcoming");
+				console.log(results);
+				console.log("ip");
+				console.log(results[0]);
+				console.log("res is:");
+				console.log(res);*/
+				console.log(results[0]);
+				var finalIns = JSON.stringify(results[0]);
+				var finalTwi = JSON.stringify(results[1]);
+				res.render('result.jade', {'instagramPosts' : finalIns, 'twitterPosts' : finalTwi});
 			});
 		
 		//This is the twitter stream.
