@@ -38,6 +38,8 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/result', routes.index);
+var i = 0;
 
 app.post('/', function(req, res){
 	var twit = new twitter({
@@ -56,7 +58,8 @@ app.post('/', function(req, res){
 	};
 	ig.use({ client_id: 'fbc6b586a2f24eeb8876360c872a8f65',
          client_secret: '2f4ba206c6b34c41a8676333324a1237' });
-
+	var instagramPosts= [];
+	var twitterPosts = [];
 	geocoder.geocode(req.body.location, function(err, res){
 		if (err)
 			console.log(err);
@@ -74,16 +77,54 @@ app.post('/', function(req, res){
 		ig.media_search(loc.lat, loc.lng, 3500, function(err, medias, limit){
 			if (err)
 				console.log(err);
-			console.log(medias);
+			//console.log(medias);
+			
+				for (i = 0; i<10; i++)
+				{
+					if (medias[i].caption != null && medias[i].caption.text != null)
+					{
+						
+						instagramPosts[i] = {text: medias[i].caption.text, link: medias[i].link}
+						i++
+					}
+				}
+			
+				
+			
 		});
 		//This is the twitter stream.
-		twit.search(req.body.location, {},  function(err, data) {
+		
+		twit.stream('statuses/filter', {'locations': location}, function(stream) {
+	  		stream.on('data', function (data) {
+	    	//console.log(data)
+	    			
+	    			if ( twitterPosts[i] != undefined && data.text != null && i < 6)
+	    			{
+	  					twitterPosts[i].text = data.text;
+	  					i++;
+	  				}
 	  			
-		});
-});
+	    		});
+
+	  		
+	  		stream.on('error', function(response){
+	  			console.log(response);
+	  		});
+	  		stream.on('destroy', function(response){
+	  			console.log(response);
+	  		});
+	  		setTimeout(stream.destroy, 5000);
+	  	});
+		
+	});
+	res.render('result.jade', instagramPosts, twitterPosts, function(err, html){
+
+	});
 });
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 
 });
+
+
