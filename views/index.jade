@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  row
+      .large-12.columns
+        br
+        h1(style='font-weight: bold;') Welcome to InstantLocalNews.
+        h2(style='font-weight: bold;') Make any news, anywhere Instant and Local.
+        br
+    .row
+      .large-12.columns.panel
+        br
+        .large-4.columns
+          h3 What's happening in 
+        .large-5.columns
+          input#locationName(type='text', placeholder='Enter Location')
+        .large-1.columns
+          h3 ?
+        .large-2.columns.marginRight
+          a.small.success.button(href='#', onclick='getLocation()') Go!
+    #twitterPosts.large-6.columns
+    #instagramPosts.large-6.columns
+    .row.panel
+      .large-12.columns
+        p
+          | Insert a location in the above form and hit Go! InstantLocalNews will fill your feed with Instagram photos and Tweets posted and tweeted, respectively, from the location you specified. What better way to find out what's going on at a location than by seeing what people are saying and by viewing the photos they take?
+          p
+    .large-12.columns.text-center
+      p
+        | Copyright © 2014 Jeff Kikel and Ronit Kumar. All rights reserved.
+    script(src='js/jquery.js')
+    script(src='js/foundation.min.js')
+    script
+      $(document).foundation();
